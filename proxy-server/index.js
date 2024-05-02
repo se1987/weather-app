@@ -7,6 +7,7 @@ const {createProxyMiddleware} = require("http-proxy-middleware")
 const rateLimit =
     require("express-rate-limit")
     require("dotenv").config()
+    const url = require("url")
 
 const limiter = rateLimit({
     windowMs: 15 * 60 * 1000,
@@ -20,8 +21,9 @@ app.get("/", (req, res) => {
 })
 
 app.use("/world-weather-data", (req, res, next) => {
+    const city = url.parse(req.url).query
     createProxyMiddleware({
-        target: process.env.BASE_API_URL_WORLD_WEATHER,
+        target: `${process.env.BASE_API_URL_WORLD_WEATHER}${city}&api=no`,
         changeOrigin: true,
         pathRewrite: {
             [`^/world-weather-data`]: " ",
